@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Apology for You</title>
+    <style>
+        /* ==================================== */
+        /* BASE STYLES (Desktop/Tablet) */
+        /* ==================================== */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: #ffe6f0; 
+            overflow: hidden; 
+            position: relative;
+        }
+        /* Modal for Volume Prompt */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            z-index: 100;
+            width: 80%;
+            max-width: 400px;
+        }
+        .modal button {
+            padding: 12px 20px;
+            margin: 8px 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            background: #ff69b4; 
+            color: white;
+            transition: background 0.3s;
+        }
+        .modal button:hover { background: #ff85c1; }
+
+        /* Apology Card Styling */
+        #apology-card {
+            background: white;
+            /* Increased Card Padding */
+            padding: 50px; 
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            max-width: 650px; 
+            width: 90%;
+            transition: opacity 1s, transform 1s;
+        }
+        .card-content {
+            /* Desktop: Image LEFT, Text RIGHT layout */
+            display: flex;
+            align-items: center;
+            gap: 30px; /* Increased gap */
+            text-align: left;
+        }
+        .gif-container {
+            flex-shrink: 0;
+            width: 150px; 
+            height: auto;
+        }
+        .gif-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+        .apology-text { 
+            flex-grow: 1; 
+            font-size: 1.1em; 
+            line-height: 1.8; /* Increased line height for better readability */
+            color: #333;
+            margin: 15px 0; /* Added margin to separate paragraphs */
+        }
+        
+        /* Utility Class (needed for hiding/showing) */
+        .hidden { display: none !important; }
+
+        /* Timer and Message Styles */
+        #timer-display {
+            position: fixed; top: 10px; right: 10px; padding: 8px; 
+            background: rgba(255, 255, 255, 0.8); border-radius: 8px;
+            color: #e91e63; font-weight: bold; font-size: 1em; 
+            z-index: 101; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #message-box {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            padding: 25px; /* Slightly more padding for the clickable area */
+            background: #ffcdd2; 
+            color: #d32f2f; 
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold; 
+            z-index: 102; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 350px;
+            text-align: center;
+            cursor: pointer; /* Indicate it's clickable */
+            transition: background 0.2s;
+        }
+        #message-box:hover {
+            background: #ffb3ba; /* Highlight on hover */
+        }
+        .click-here {
+            color: #010101;
+            font-size: 0.2em;
+            text-decoration: underline;
+            display: block;
+            margin-top: 10px;
+        }
+        
+        /* Acceptance Button (Accept my apology) */
+        #accept-btn {
+            display: block;
+            margin: 30px 0 0 auto; 
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s;
+        }
+
+        /* --- CONFETTI/PARTICLE STYLES --- */
+        #confetti-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 99; overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+        }
+        @keyframes fall-and-drift {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(50vh) translateX(5vw) rotate(180deg); opacity: 1; }
+            100% { transform: translateY(110vh) translateX(-5vw) rotate(360deg); opacity: 0.5; }
+        }
+
+        /* ==================================== */
+        /* MOBILE OPTIMIZATION (Max Width 600px) */
+        /* ==================================== */
+        @media (max-width: 600px) {
+            #apology-card {
+                padding: 30px 20px; /* Adjusted card padding for mobile */
+            }
+            .card-content {
+                /* Mobile: Stack image and text vertically */
+                flex-direction: column;
+                gap: 15px;
+                text-align: center; 
+            }
+            .gif-container {
+                width: 100px; 
+            }
+            .apology-text {
+                font-size: 1em; 
+                text-align: center; 
+            }
+            #accept-btn {
+                margin: 20px auto 0 auto; 
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+            
+            /* Surprise Button - Easier to see/read */
+            #surprise-btn {
+                font-size: 16px !important;
+                padding: 10px 20px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="background-music" loop>
+        <source src="38163ca2acc571a4c55872d900209ec7_160.mp4" type="audio/mpeg">
+    </audio>
+
+    <div id="volume-prompt-modal" class="modal">
+        <p>This experience is best with **full volume**. May I set it to 100%?</p>
+        <button onclick="startExperience(true)">Yes, Full Volume! 🔊</button>
+        <button onclick="startExperience(false)">Just Start It</button>
+    </div>
+
+    <div id="timer-display" class="hidden"></div>
+    
+    <div id="message-box" class="hidden"></div>
+
+    <button 
+        id="surprise-btn" 
+        class="hidden"
+        onmouseover="moveButton(this)"
+        onclick="openApology(this)"
+        style="
+            position: absolute;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 3px solid #ff69b4;
+            border-radius: 30px;
+            cursor: pointer;
+            background-color: white;
+            color: #ff69b4;
+            transition: all 0.2s ease-out;
+            z-index: 50;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            display: none; 
+        "
+    >
+        Surprise! Catch Me To Open - Click on this
+    </button>
+
+    <div id="apology-card" class="hidden" style="background-image: url('https://img.freepik.com/premium-photo/sunflowers-white-background-with-white-background_1058796-24253.jpg');
+background-repeat: no-repeat;
+background-size: cover;">
+        <div class="card-content">
+            <div class="gif-container">
+                <img id="apology-gif" 
+                    src="https://media0.giphy.com/media/v1.Y2lkPTZjMDliOTUyZmFhNmtkeXBxOTR3eHA2ZnI0cjk2bGxzaGNtdzhvdWd2czltc2VzcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/UksRwZQXDijMUSy72G/source.gif" alt="Beautiful Romantic Card">
+            </div>
+            
+            <div>
+                <p class="apology-text">Cutu/Sweetu 👸,</p>
+                <p class="apology-text">I know I messed up, and words alone might not fix everything. Still, I want you to know how deeply I care about you. Please accept my deepest, most heartfelt apology.</p>
+
+                <button id="accept-btn" class="hidden" onclick="handleAcceptance(this)">
+                    Accept my apology
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <script>
+        // DOM elements
+        const music = document.getElementById('background-music');
+        const apologyCard = document.getElementById('apology-card');
+        const volumeModal = document.getElementById('volume-prompt-modal');
+        const timerDisplay = document.getElementById('timer-display');
+        const messageBox = document.getElementById('message-box');
+
+        const btnSize = { width: 150, height: 50 }; 
+        
+        const heartEmojis = ['❤️', '💜', '💙', '💖', '♥️', '💗', '💛', '💓', '💚', '🤍', '🧡', '💝', '✨']; 
+        
+        let triesLeft = 3; 
+        let timerInterval;
+        let infiniteHeartInterval;
+        const TIME_LIMIT = 5; 
+
+        // --- 1. Audio and Start Control ---
+
+        function startExperience(fullVolume) {
+            volumeModal.classList.add('hidden'); 
+            music.volume = fullVolume ? 1.0 : 0.5;
+            music.play().catch(e => console.log("Audio play blocked:", e)); 
+            
+            const surpriseBtn = document.getElementById('surprise-btn');
+            surpriseBtn.classList.remove('hidden');
+            surpriseBtn.style.display = 'block';
+            
+            startRound();
+        }
+
+        function startRound() {
+            timerDisplay.classList.remove('hidden');
+            timerDisplay.textContent = `Tries Left: ${triesLeft} | Time: ${TIME_LIMIT}s`;
+            
+            let timeRemaining = TIME_LIMIT;
+            clearInterval(timerInterval); 
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerDisplay.textContent = `Tries Left: ${triesLeft} | Time: ${timeRemaining}s`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleFail();
+                }
+            }, 1000);
+        }
+
+        function handleFail() {
+            triesLeft--;
+            timerDisplay.classList.add('hidden');
+
+            const surpriseBtn = document.getElementById('surprise-btn');
+
+            if (triesLeft > 0) {
+                messageBox.innerHTML = `Time's up! You have **${triesLeft}** tries left. Be quicker! 🏃‍♀️`;
+                messageBox.classList.remove('hidden');
+                setTimeout(() => {
+                    messageBox.classList.add('hidden');
+                    startRound();
+                }, 2000);
+            } else {
+                // Final fail: Hide the moving button and make the message box clickable
+                surpriseBtn.classList.add('hidden');
+                
+                messageBox.innerHTML = `You ran out of tries! 🥺 But I still want you to see this... <span class="click-here">Click here</span>`;
+                messageBox.classList.remove('hidden');
+                
+                // Make the message box itself open the apology card
+                messageBox.onclick = () => {
+                    messageBox.classList.add('hidden');
+                    openApology(surpriseBtn, true); // Force open the card
+                    // Remove click listener after use
+                    messageBox.onclick = null; 
+                };
+            }
+        }
+        
+        // --- 2. Moving Button Logic ---
+
+        function moveButton(btn) {
+            const maxX = window.innerWidth - btnSize.width;
+            const maxY = window.innerHeight - btnSize.height;
+
+            const newX = Math.random() * maxX;
+            const newY = Math.random() * maxY;
+
+            btn.style.left = `${newX}px`;
+            btn.style.top = `${newY}px`;
+
+            // Display the moving GIF inside the button
+            btn.innerHTML = '<img src="https://i.giphy.com/media/v1.Y2lkPTZjMDliOTUycWk0cnVhOW54dW8wNm05bmZxb2Izb2V6cXhncmU5NDBhdzAweHd5dSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/RM0FFEcOLBzEjtrbCK/giphy.gif" style="width: 100%; height: auto; border-radius: 30px;">';
+            btn.style.padding = '0'; 
+            btn.style.width = `${btnSize.width}px`;
+            btn.style.height = `${btnSize.height}px`;
+        }
+
+        // --- 3. Apology Card Reveal ---
+
+        function openApology(btn, forceOpen = false) {
+            if (triesLeft >= 1 || forceOpen) {
+                clearInterval(timerInterval);
+                timerDisplay.classList.add('hidden');
+                btn.onmouseover = null; 
+                btn.classList.add('hidden');
+
+                apologyCard.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    const acceptBtn = document.getElementById('accept-btn');
+                    acceptBtn.classList.remove('hidden');
+                }, 500); 
+            }
+        }
+
+        // --- 4. Acceptance and Infinite Sparkles ---
+
+        function handleAcceptance(btn) {
+            btn.disabled = true;
+            btn.innerHTML = 'Apology Accepted! 🥰';
+
+            startConfettiLoop();
+            
+            btn.style.boxShadow = '0 0 15px 5px rgba(255, 105, 180, 1)';
+        }
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+
+            const emoji = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+            particle.innerHTML = emoji;
+            particle.style.fontSize = `${Math.random() * 2 + 1}em`; 
+
+            particle.style.position = 'absolute';
+            particle.style.left = `${Math.random() * 100}vw`; 
+            particle.style.top = '-20px'; 
+            particle.style.opacity = Math.random();
+            
+            const animationDuration = Math.random() * 4 + 3; 
+            particle.style.animation = `fall-and-drift ${animationDuration}s linear forwards`;
+
+            document.getElementById('confetti-container').appendChild(particle);
+
+            setTimeout(() => particle.remove(), animationDuration * 1000);
+        }
+
+        function startConfettiLoop() {
+            infiniteHeartInterval = setInterval(createParticle, 100); 
+        }
+    </script>
+
+</body>
+</html>
